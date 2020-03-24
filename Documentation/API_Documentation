@@ -1,0 +1,206 @@
+
+Creating question of a user
+    
+    • URL
+      users/user_id/question_new/
+    • METHOD
+      POST
+    • URL Params
+      Required
+      id = user_id
+    • DATA Params
+      Required
+      question=”The question asked”
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:”New Question added!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:”Invalid User_id to post question” or status: "No content of question!"}
+
+Getting a question of a user
+
+    • URL
+      users/user_id/questions/question_id 
+    • METHOD
+      GET
+    • URL Params
+      Required
+      id's = [question_id, user_id]
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{question:”The content of question”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:”invalid id provided}
+
+Getting all questions of a user
+
+    • URL
+      users/user_id/questions
+    • METHOD
+      GET
+    • URL Params
+      Required
+      id = [user_id]
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{question:”The content of questions”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:”invalid id provided}
+
+Getting all questions of all users
+
+    • URL
+      users/questions
+    • METHOD
+      GET
+    • URL Params
+      Required
+      None
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{question:”The content of questions”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:”invalid id provided}
+      
+
+Updating a question of a user
+    
+    • URL
+      users/user_id/questions/question_id
+    • METHOD
+      PUT
+    • URL Params
+      Required
+      id’s = [user_id, question_id]
+    • DATA Params
+      Required
+      question="mew content of question"
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:”Question edited!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"Invalid User id or Question id"}
+    
+Deleting Questions
+    
+    • URL
+      users/user_id/questions/question_id
+    • METHOD
+      DELETE
+    • URL Params
+      Required
+      id’s = [user_id, question_id]
+    • DATA Params
+      None
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:”Question deleted!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"Invalid User id or Question id"}
+
+
+
+Creating a user
+    
+    • URL
+      signup/
+    • METHOD
+      POST
+    • URL Params
+      Required
+      None
+    • DATA Params
+      Required
+      username="the name of user"
+      email="email of user"
+      password="the password of user"
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:”New User added!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:”Invalid"}
+
+Getting all users
+
+    • URL
+      /users
+    • METHOD
+      GET
+    • URL Params
+      Required
+      None
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{username:”The name of user”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"invalid"}
+
+Getting details of a particular user
+
+    • URL
+      /users/user_id
+    • METHOD
+      GET
+    • URL Params
+      Required
+      id=[user_id]
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{username:”The name of user”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"invalid"}
+
+Updating a user
+    
+    • URL
+      users/user_id
+    • METHOD
+      PUT
+    • URL Params
+      Required
+      id’s = [user_id]
+    • DATA Params
+      Required
+      username="new name of user"
+      email="new email of user"
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:"User updated!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"Invalid User id"}
+
+
+Deleting a user
+    
+    • URL
+      users/user_id
+    • METHOD
+      DELETE
+    • URL Params
+      Required
+      id’s = [user_id]
+    • DATA Params
+      Required
+      None
+    • SUCCESS RESPONSE
+      Code: 200
+      Content:{status:"User deleted!”}
+    • ERROR RESPONSE
+      Code:400 BAD REQUEST
+      Content: {status:"Invalid User id"}
+
+
+
+      
+      
+      

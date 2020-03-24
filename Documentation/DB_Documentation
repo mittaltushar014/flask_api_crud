@@ -1,0 +1,18 @@
+Schema for Database:
+
+User - Table :
+
+id          --- int            --- primary key(auto incremented)
+name        --- string(25)     --- unique value
+email       --- string(25)     --- unique value
+password    --- string(25)     --- hashed password
+
+
+Questions - Table :
+
+id          --- int            --- primary key(auto incremented)
+user_id     --- int            --- foreign key(linked with id in user table)
+question    --- string(200)    --- 
+Datetime    --- datetime       --- date and time of posting of question
+
+
