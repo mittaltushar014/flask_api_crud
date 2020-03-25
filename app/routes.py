@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Questions
 from app.config import Config
+from functools import wraps
 import jwt
 
 
@@ -14,17 +15,19 @@ def token_verify(function):
         token = None
         if 'token' in request.headers:
             token = request.headers['token']
+            print(token)
 
         if not token:
             return jsonify({'message': 'Missing Token!', "status": "401"})
 
         try:
             token_verify = jwt.decode(token, Config.SECRET_KEY)
-            active_user = User.query.filter_by(id=token_verify['user_id']).first()
+            active_user= User.query.filter_by(id=token_verify['user_id']).first()
+            active_user_id=active_user.id
         except:
             return jsonify({'message': 'Invalid token!', "status": "404"})
 
-        return function(active_user, *args, **kwargs)
+        return function(active_user_id, *args, **kwargs)
 
     return decorated
 
@@ -84,11 +87,12 @@ def users():
 
 
 @app.route('/users/<int:user_id>',methods=['GET'])
-def user(user_id):
+@token_verify
+def user(active_user_id ,user_id):
     '''For displaying a particular user'''
 
     if request.method == "GET":
-        user = User.query.filter_by(id = user_id).first()
+        user = User.query.filter_by(id = active_user_id).first()
 
     a_user = {'id': user.id, 'username': user.username, 'email': user.email}
     
@@ -96,12 +100,13 @@ def user(user_id):
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
+@token_verify
+def update_user(active_user_id, user_id):
     '''For updating a user details'''
 
     if request.method == "PUT":
 
-        user = User.query.filter_by(id = user_id).first()
+        user = User.query.filter_by(id = active_user_id).first()
         new_details = request.json
 
         if not user:
@@ -117,11 +122,12 @@ def update_user(user_id):
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
+@token_verify
+def delete_user(active_user_id ,user_id):
     '''For deleting a user'''
 
     if request.method == "DELETE":
-        user = User.query.filter_by(id=user_id).first()
+        user = User.query.filter_by(id=active_user_id).first()
 
         if not user:
             return jsonify({'message': 'User not found', "status": "404"})
@@ -133,13 +139,14 @@ def delete_user(user_id):
 
 
 @app.route('/users/<int:user_id>/question_new', methods=['POST'])
-def question_new(user_id):
+@token_verify
+def question_new(active_user_id, user_id):
     '''For adding a new question for a particular user'''
 
     if request.method == "POST":
         request_JSON = request.json
         question_sent = request_JSON['question']
-        question = Questions(question=question_sent, userid=user_id)
+        question = Questions(question=question_sent, userid=active_user_id)
         db.session.add(question)
         db.session.commit()
 
@@ -163,11 +170,12 @@ def all_questions():
 
 
 @app.route('/users/<user_id>/questions',methods=['GET'])
-def questions(user_id):
+@token_verify
+def questions(active_user_id, user_id):
     '''For displaying all questions of a particular user'''
 
     if request.method == "GET":
-        questions = Questions.query.filter_by(userid=user_id).all()
+        questions = Questions.query.filter_by(userid=active_user_id).all()
 
     list_of_ques = []
 
@@ -179,11 +187,12 @@ def questions(user_id):
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>',methods=['GET'])
-def a_question_user(user_id, question_id):
+@token_verify
+def a_question_user(active_user_id ,user_id, question_id):
     '''For displaying a question of a particular user'''
 
     if request.method == "GET":
-        question = Questions.query.filter_by(userid = user_id, id = question_id).first()
+        question = Questions.query.filter_by(userid = active_user_id, id = question_id).first()
 
     a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
 
@@ -191,12 +200,13 @@ def a_question_user(user_id, question_id):
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['PUT'])
-def update_question(user_id, question_id):
+@token_verify
+def update_question(active_user_id ,user_id, question_id):
     '''For updating a question of a partcular user'''
 
     if request.method == "PUT":
         update_question = request.json
-        question = Questions.query.filter_by(id=question_id, userid=user_id).first()
+        question = Questions.query.filter_by(id=question_id, userid=active_user_id).first()
 
         if not question:
             return jsonify({'message': 'No question found!', "status": "404"})
@@ -209,11 +219,12 @@ def update_question(user_id, question_id):
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['DELETE'])
-def delete_question(user_id, question_id):
+@token_verify
+def delete_question(active_user_id, user_id, question_id):
     '''For deleting a question of a user'''
 
     if request.method == "DELETE":
-        question = Questions.query.filter_by(id=question_id, userid=user_id).first()
+        question = Questions.query.filter_by(id=question_id, userid=active_user_id).first()
 
         if not question:
             return jsonify({'message': 'No question found!', "status": "404"})
