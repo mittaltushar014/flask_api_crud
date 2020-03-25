@@ -1,8 +1,33 @@
 from flask import render_template, flash, redirect, url_for, request, Flask, jsonify
-from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
-from app.models import User, Question, Questions
+from app.models import User, Questions
+from app.config import Config
+import jwt
+
+
+def token_verify(function):
+    """ This function is used to verify token and act as step of authorization"""
+
+    @wraps(function)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'token' in request.headers:
+            token = request.headers['token']
+
+        if not token:
+            return jsonify({'message': 'Missing Token!', "status": "401"})
+
+        try:
+            token_verify = jwt.decode(token, Config.SECRET_KEY)
+            active_user = User.query.filter_by(id=token_verify['user_id']).first()
+        except:
+            return jsonify({'message': 'Invalid token!', "status": "404"})
+
+        return function(active_user, *args, **kwargs)
+
+    return decorated
+
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -21,6 +46,28 @@ def signup():
         return jsonify({"response":"User " + username_sent + " added successfully!"})
 
 
+@app.route('/login')
+def login():
+    """For checking authorization and creating token for further use"""
+    
+    credentials = request.authorization
+
+    if not credentials or not credentials.username or not credentials.password:
+        return make_response('Verification not done', 401)
+
+    user = User.query.filter_by(username=credentials.username).first()
+
+    if not user:
+        return make_response('No such user', 401)
+
+    if check_password_hash(user.password, credentials.password):
+        hashed_token = jwt.encode(
+            {'user_id': user.id},
+            Config.SECRET_KEY)
+
+        return jsonify({'hashed_token': hashed_token.decode('UTF-8')})
+
+
 @app.route('/users', methods=['GET'])
 def users():
     '''For displaying all users'''
@@ -35,56 +82,53 @@ def users():
         return jsonify({"response:" : list_data})
 
 
-@app.route('/users/<user_id>',methods=['GET'])
+@app.route('/users/<int:user_id>',methods=['GET'])
 def user(user_id):
     '''For displaying a particular user'''
 
     if request.method == "GET":
-    user = User.query.filter_by(userid=user_id).all()
+        user = User.query.filter_by(id = user_id).first()
 
-    list_of_user = []
-
-    for a_user in user:
-        a_user = {'id': a_user.id, 'username': a_user.username, 'email': a_user.email}
-        list_of_user.append(a_user)
-
-    return jsonify({'response': list_of_user, "status": "200"})        
+    a_user = {'id': user.id, 'username': user.username, 'email': user.email}
+    
+    return jsonify({'user': a_user})        
 
 
-@app.route('/users/<user_id>', methods=['PUT'])
+@app.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     '''For updating a user details'''
 
-    user = User.query.filter_by(userid=user_id).first()
-    new_details = request.json
+    if request.method == "PUT":
 
-    if not user:
-        return jsonify({'message': 'No user found!', "status": "404"})
+        user = User.query.filter_by(id = user_id).first()
+        new_details = request.json
 
-    if new_details["username"]:
+        if not user:
+            return jsonify({'message': 'No user found!', "status": "404"})
+
+
         user.username = new_details["username"]
-
-    if new_details["email"]:
         user.email = new_details["email"]
 
-    db.session.commit()
+        db.session.commit()
 
-    return jsonify({'message': 'The user has been updated!'})
+        return jsonify({'message': 'The user has been updated!'})
 
 
-@app.route('/users/<user_id>', methods=['DELETE'])
+@app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     '''For deleting a user'''
 
-    user = User.query.filter_by(id=user_id).first()
+    if request.method == "DELETE":
+        user = User.query.filter_by(id=user_id).first()
 
-    if not user:
-        return jsonify({'message': 'User not found', "status": "404"})
+        if not user:
+            return jsonify({'message': 'User not found', "status": "404"})
 
-    db.session.delete(user)
-    db.session.commit()
+        db.session.delete(user)
+        db.session.commit()
 
-    return jsonify({'message': 'user deleted', "status": "200"})
+        return jsonify({'message': 'The user id deleted!', "status": "200"})
 
 
 @app.route('/users/<int:user_id>/question_new', methods=['POST'])
@@ -94,11 +138,11 @@ def question_new(user_id):
     if request.method == "POST":
         request_JSON = request.json
         question_sent = request_JSON['question']
-        question= Questions(question=question_sent, userid=user_id)
+        question = Questions(question=question_sent, userid=user_id)
         db.session.add(question)
         db.session.commit()
 
-        return jsonify({"response":"Your Question added successfully!"})        
+        return jsonify({"response":"Your question is added successfully!"})        
 
 
 @app.route('/users/questions',methods=['GET'])
@@ -106,16 +150,15 @@ def all_questions():
     '''For displaying all questions of all users'''
 
     if request.method == "GET":
-    all_questions = Questions.query.all()
+        all_questions = Questions.query.all()
 
     list_of_ques = []
 
     for question in all_questions:
-        a_question = {'id': question.id, 'text': question.question, 'time': question.timestamp}
+        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
         list_of_ques.append(a_question)
 
     return jsonify({'questions': list_of_ques, "status": "200"})
-
 
 
 @app.route('/users/<user_id>/questions',methods=['GET'])
@@ -123,45 +166,58 @@ def questions(user_id):
     '''For displaying all questions of a particular user'''
 
     if request.method == "GET":
-    questions = Questions.query.filter_by(userid=user_id).all()
+        questions = Questions.query.filter_by(userid=user_id).all()
 
     list_of_ques = []
 
     for question in questions:
-        a_question = {'id': question.id, 'text': question.question, 'time': question.timestamp}
+        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
         list_of_ques.append(a_question)
 
     return jsonify({'questions': list_of_ques, "status": "200"})
 
 
+@app.route('/users/<int:user_id>/questions/<int:question_id>',methods=['GET'])
+def a_question_user(user_id, question_id):
+    '''For displaying a question of a particular user'''
 
-@app.route('/users/user_id/questions/<question_id>', methods=['PUT'])
+    if request.method == "GET":
+        question = Questions.query.filter_by(userid = user_id, id = question_id).first()
+
+    a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
+
+    return jsonify({'question': a_question, "status": "200"})
+
+
+@app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['PUT'])
 def update_question(user_id, question_id):
     '''For updating a question of a partcular user'''
 
-    update_question = request.json
-    question = Questions.query.filter_by(id=question_id, userid=user_id).first()
+    if request.method == "PUT":
+        update_question = request.json
+        question = Questions.query.filter_by(id=question_id, userid=user_id).first()
 
-    if not question:
-        return jsonify({'message': 'No question found!', "status": "404"})
+        if not question:
+            return jsonify({'message': 'No question found!', "status": "404"})
 
-    question.question = update_question['question']
+        question.question = update_question['question']
 
-    db.session.commit()
+        db.session.commit()
 
-    return jsonify({'message': 'Question has been changed!', "status": "200"})
+        return jsonify({'message': 'Question has been changed!', "status": "200"})
 
 
-@app.route('/users/user_id/questions/<question_id>', methods=['DELETE'])
+@app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['DELETE'])
 def delete_question(user_id, question_id):
     '''For deleting a question of a user'''
 
-    question = Questions.query.filter_by(id=question_id, userid=user_id).first()
+    if request.method == "DELETE":
+        question = Questions.query.filter_by(id=question_id, userid=user_id).first()
 
-    if not question:
-        return jsonify({'message': 'No question found!', "status": "404"})
+        if not question:
+            return jsonify({'message': 'No question found!', "status": "404"})
 
-    db.session.delete(question)
-    db.session.commit()
+        db.session.delete(question)
+        db.session.commit()
 
-    return jsonify({'message': 'Question item deleted!, "status": "200"'})
+        return jsonify({'message': 'Question item deleted!', "status": "200"})
