@@ -1,25 +1,30 @@
 from flask import render_template, flash, redirect, url_for, request, Flask, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Question, Questions
 
 @app.route('/signup', methods=['POST'])
 def signup():
+    '''For adding user to User table'''
 
     if request.method == "POST":
         request_JSON = request.json
         print(request_JSON)
         username_sent = request_JSON['username']
         email_sent = request_JSON['email']
-        password_sent = request_JSON['password']
+        password_sent = generate_password_hash(request_JSON['password'], method='sha256')
         newuser= User(username=username_sent, email=email_sent, password=password_sent)
         db.session.add(newuser)
         db.session.commit()
 
         return jsonify({"response":"User " + username_sent + " added successfully!"})
 
+
 @app.route('/users', methods=['GET'])
 def users():
+    '''For displaying all users'''
+
     if request.method == "GET":
         users_data = User.query.all()
         print(users_data)
@@ -29,8 +34,10 @@ def users():
             list_data.append(user_data1)
         return jsonify({"response:" : list_data})
 
+
 @app.route('/users/<user_id>',methods=['GET'])
 def user(user_id):
+    '''For displaying a particular user'''
 
     if request.method == "GET":
     user = User.query.filter_by(userid=user_id).all()
@@ -43,8 +50,11 @@ def user(user_id):
 
     return jsonify({'response': list_of_user, "status": "200"})        
 
+
 @app.route('/users/<user_id>', methods=['PUT'])
 def update_user(user_id):
+    '''For updating a user details'''
+
     user = User.query.filter_by(userid=user_id).first()
     new_details = request.json
 
@@ -64,6 +74,7 @@ def update_user(user_id):
 
 @app.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    '''For deleting a user'''
 
     user = User.query.filter_by(id=user_id).first()
 
@@ -76,20 +87,9 @@ def delete_user(user_id):
     return jsonify({'message': 'user deleted', "status": "200"})
 
 
-
-@app.route('/users/<user_id>/new_question', methods=['POST'])
-def new_question(user_id):
-    if request.method == "POST":
-        request_JSON = request.json
-        question_sent = request_JSON['question']
-        question= Question(question=question_sent, user_id=user_id)
-        db.session.add(question)
-        db.session.commit()
-
-        return jsonify({"response":"Question added successfully!"})     
-
 @app.route('/users/<int:user_id>/question_new', methods=['POST'])
 def question_new(user_id):
+    '''For adding a new question for a particular user'''
 
     if request.method == "POST":
         request_JSON = request.json
@@ -103,6 +103,7 @@ def question_new(user_id):
 
 @app.route('/users/questions',methods=['GET'])
 def all_questions():
+    '''For displaying all questions of all users'''
 
     if request.method == "GET":
     all_questions = Questions.query.all()
@@ -119,6 +120,7 @@ def all_questions():
 
 @app.route('/users/<user_id>/questions',methods=['GET'])
 def questions(user_id):
+    '''For displaying all questions of a particular user'''
 
     if request.method == "GET":
     questions = Questions.query.filter_by(userid=user_id).all()
@@ -135,6 +137,8 @@ def questions(user_id):
 
 @app.route('/users/user_id/questions/<question_id>', methods=['PUT'])
 def update_question(user_id, question_id):
+    '''For updating a question of a partcular user'''
+
     update_question = request.json
     question = Questions.query.filter_by(id=question_id, userid=user_id).first()
 
@@ -147,8 +151,11 @@ def update_question(user_id, question_id):
 
     return jsonify({'message': 'Question has been changed!', "status": "200"})
 
+
 @app.route('/users/user_id/questions/<question_id>', methods=['DELETE'])
 def delete_question(user_id, question_id):
+    '''For deleting a question of a user'''
+
     question = Questions.query.filter_by(id=question_id, userid=user_id).first()
 
     if not question:
