@@ -29,22 +29,6 @@ def token_verify(function):
     return decorated
 
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    '''For adding user to User table'''
-
-    if request.method == "POST":
-        request_JSON = request.json
-        print(request_JSON)
-        username_sent = request_JSON['username']
-        email_sent = request_JSON['email']
-        password_sent = generate_password_hash(request_JSON['password'], method='sha256')
-        newuser= User(username=username_sent, email=email_sent, password=password_sent)
-        db.session.add(newuser)
-        db.session.commit()
-
-        return jsonify({"response":"User " + username_sent + " added successfully!"})
-
 
 @app.route('/login')
 def login():
@@ -66,6 +50,23 @@ def login():
             Config.SECRET_KEY)
 
         return jsonify({'hashed_token': hashed_token.decode('UTF-8')})
+
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    '''For adding user to User table'''
+
+    if request.method == "POST":
+        request_JSON = request.json
+        print(request_JSON)
+        username_sent = request_JSON['username']
+        email_sent = request_JSON['email']
+        password_sent = generate_password_hash(request_JSON['password'], method='sha256')
+        newuser= User(username=username_sent, email=email_sent, password=password_sent)
+        db.session.add(newuser)
+        db.session.commit()
+
+        return jsonify({"response":"User " + username_sent + " added successfully!"})
 
 
 @app.route('/users', methods=['GET'])
