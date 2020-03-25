@@ -1,0 +1,260 @@
+{
+	"variables": [],
+	"info": {
+		"name": "flask_api_crud",
+		"_postman_id": "a9c49f62-7256-37b2-e95a-ad311b1d085e",
+		"description": "Collection of various API requests for the user and questions manipulations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://127.0.0.1:5000/users",
+			"request": {
+				"url": "http://127.0.0.1:5000/login",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic dHVzaGFyOnR1c2hhcjEyMw==",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": "'\"",
+						"disabled": true
+					},
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozfQ.7HQQD5caNiNGNuqJLgC7DI4iN6_meK0sVOLRLy1AEpo",
+						"description": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"question\": \"Your favourite sport?\"\n\t\n}"
+				},
+				"description": "For gettting all users stored in table."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/signup",
+			"request": {
+				"url": "http://127.0.0.1:5000/signup",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"username\":\"satish\",\n \"email\": \"satish@gmail.com\",\n \"password\": \"satish123\"\n}"
+				},
+				"description": "For signing up a user in user table."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/login",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "satish",
+						"password": "satish123",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"url": "http://127.0.0.1:5000/login",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic c2F0aXNoOnNhdGlzaDEyMw==",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Logging user satish."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5",
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "For getting details of a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"satish_beja\",\n\t\"email\":\"satish_beja@gmail.com\"\n}"
+				},
+				"description": "For updating details of a user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/4",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/4",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo0fQ.kdA1tqCIRKR_h81bR-mSXd6cXjDI8M59R9RkRN5CpDw",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "For deleting a user. Here user sarthak is deleted."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5/question_new",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5/question_new",
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"question\": \"Whats your status?\"\n}"
+				},
+				"description": "For adding a new question for a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5/questions",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5/questions",
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "For getting all questions of a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/questions",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/questions",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "For getting all questions of all users."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5/questions/8",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5/questions/8",
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "For getting a particular question of a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5/questions/8",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5/questions/8",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"question\":\"Is this the new content of question?\"\n}"
+				},
+				"description": "For updating a question of a particular user."
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:5000/users/5/questions/8",
+			"request": {
+				"url": "http://127.0.0.1:5000/users/5/questions/8",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "token",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1fQ.GUOUFzVFCKeHTsis1Qy_9CVQQ4W77L6kpxYDcTRboa8",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "For deleting a question of a particular user."
+			},
+			"response": []
+		}
+	]
+}
