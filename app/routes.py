@@ -52,7 +52,7 @@ def login():
             {'user_id': user.id},
             Config.SECRET_KEY)
 
-        return jsonify({'hashed_token': hashed_token.decode('UTF-8')})
+        return jsonify({'hashed_token': hashed_token.decode('UTF-8'), "status" : "200 OK"})
 
 
 @app.route('/signup', methods=['POST'])
@@ -69,7 +69,7 @@ def signup():
         db.session.add(newuser)
         db.session.commit()
 
-        return jsonify({"response":"User " + username_sent + " added successfully!"})
+        return jsonify({"response":"User " + username_sent + " added successfully!", "status": "200 OK"})
 
 
 @app.route('/users', methods=['GET'])
@@ -78,12 +78,16 @@ def users():
 
     if request.method == "GET":
         users_data = User.query.all()
+
+        if not users_data:
+            return jsonify({'message': 'No user present in table!', "status": "404"})
+
         print(users_data)
         list_data=[]
         for user in users_data:
             user_data1={"id":user.id, "username":user.username, "email": user.email}
             list_data.append(user_data1)
-        return jsonify({"response:" : list_data})
+        return jsonify({"response:" : list_data, "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>',methods=['GET'])
@@ -94,9 +98,12 @@ def user(active_user_id ,user_id):
     if request.method == "GET":
         user = User.query.filter_by(id = active_user_id).first()
 
+        if not user:
+            return make_response('No such user', 401)    
+
     a_user = {'id': user.id, 'username': user.username, 'email': user.email}
     
-    return jsonify({'user': a_user})        
+    return jsonify({'user': a_user, "status": "200 OK"})        
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
@@ -118,7 +125,7 @@ def update_user(active_user_id, user_id):
 
         db.session.commit()
 
-        return jsonify({'message': 'The user has been updated!'})
+        return jsonify({'message': 'The user has been updated!', "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
@@ -135,7 +142,7 @@ def delete_user(active_user_id ,user_id):
         db.session.delete(user)
         db.session.commit()
 
-        return jsonify({'message': 'The user id deleted!', "status": "200"})
+        return jsonify({'message': 'The user id deleted!', "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>/question_new', methods=['POST'])
@@ -150,7 +157,7 @@ def question_new(active_user_id, user_id):
         db.session.add(question)
         db.session.commit()
 
-        return jsonify({"response":"Your question is added successfully!"})        
+        return jsonify({"response":"Your question is added successfully!", "status": "200 OK"})        
 
 
 @app.route('/users/questions',methods=['GET'])
@@ -160,13 +167,16 @@ def all_questions():
     if request.method == "GET":
         all_questions = Questions.query.all()
 
+        if not all_question:
+            return jsonify({'message': 'No questions found!', "status": "404"})
+
     list_of_ques = []
 
     for question in all_questions:
         a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
         list_of_ques.append(a_question)
 
-    return jsonify({'questions': list_of_ques, "status": "200"})
+    return jsonify({'questions': list_of_ques, "status": "200 OK"})
 
 
 @app.route('/users/<user_id>/questions',methods=['GET'])
@@ -177,13 +187,16 @@ def questions(active_user_id, user_id):
     if request.method == "GET":
         questions = Questions.query.filter_by(userid=active_user_id).all()
 
+        if not questions:
+            return jsonify({'message': 'No questions found!', "status": "404"})
+
     list_of_ques = []
 
     for question in questions:
         a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
         list_of_ques.append(a_question)
 
-    return jsonify({'questions': list_of_ques, "status": "200"})
+    return jsonify({'questions': list_of_ques, "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>',methods=['GET'])
@@ -194,9 +207,13 @@ def a_question_user(active_user_id ,user_id, question_id):
     if request.method == "GET":
         question = Questions.query.filter_by(userid = active_user_id, id = question_id).first()
 
+        if not question:
+            return jsonify({'message': 'No question found!', "status": "404"})
+            
+
     a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
 
-    return jsonify({'question': a_question, "status": "200"})
+    return jsonify({'question': a_question, "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['PUT'])
