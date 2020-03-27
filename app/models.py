@@ -1,3 +1,5 @@
+'''For setting up the various models required for the project'''
+
 from datetime import datetime
 from app import db
 

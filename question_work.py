@@ -1,3 +1,5 @@
+'''The main file in the project for running Flask app'''
+
 from app import app, db
 from app.models import User, Questions
 

@@ -1,3 +1,5 @@
+'''For the configurations rquired in the project'''
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 

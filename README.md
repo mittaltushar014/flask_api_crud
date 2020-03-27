@@ -24,7 +24,7 @@ SQLite
 Postman 
 
 ####How to:
->Install python 3.7.
+>Install python 3.6.
 
 >Run in termainal:
 
@@ -42,8 +42,8 @@ Postman
 ####Directory Structure:    
     
 .   
-├── app 
-│   ├── __init__.py 
+├── app     
+│   ├── __init__.py  
 │   ├── models.py   
 │   └── routes.py   
 ├── app.db  
@@ -54,7 +54,7 @@ Postman
 ├── question_work.py    
 ├── README.md   
 └── requirements.txt    
-
+        
 
 ####API Documentation
 

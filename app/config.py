@@ -1,3 +1,5 @@
+'''For setting the various configurations'''
+
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
