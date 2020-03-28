@@ -1,6 +1,6 @@
 '''For directing the various API hits and the action to be performed on hits'''
 
-from flask import render_template, flash, redirect, url_for, request, Flask, jsonify
+from flask import render_template, flash, redirect, url_for, request, Flask, jsonify, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Questions
@@ -9,29 +9,30 @@ from functools import wraps
 import jwt
 
 
-def token_verify(function):
-    """ This function is used to verify token and act as step of authorization"""
+def jwt__required(function):
+    """This function is used to verify token and act as step of authorization"""
 
     @wraps(function)
-    def decorated(*args, **kwargs):
+    def verify_token_for_user(*args, **kwargs):
+        
         token = None
         if 'token' in request.headers:
             token = request.headers['token']
             print(token)
 
         if not token:
-            return jsonify({'message': 'Missing Token!', "status": "401"})
-
+            return make_response('Missing Token', 401)
+        
         try:
-            token_verify = jwt.decode(token, Config.SECRET_KEY)
-            active_user = User.query.filter_by(id = token_verify['user_id']).first()
+            jwt__required = jwt.decode(token, Config.SECRET_KEY)
+            active_user = User.query.filter_by(id = jwt__required['user_id']).first()
             active_user_id = active_user.id
         except:
-            return jsonify({'message': 'Invalid token!', "status": "404"})
+            return make_response('Invalid token', 404)
 
         return function(active_user_id, *args, **kwargs)
 
-    return decorated
+    return verify_token_for_user
 
 
 
@@ -93,7 +94,7 @@ def users():
 
 
 @app.route('/users/<int:user_id>',methods = ['GET'])
-@token_verify
+@jwt__required
 def user(active_user_id ,user_id):
     '''For displaying a particular user'''
 
@@ -109,7 +110,7 @@ def user(active_user_id ,user_id):
 
 
 @app.route('/users/<int:user_id>', methods = ['PUT'])
-@token_verify
+@jwt__required
 def update_user(active_user_id, user_id):
     '''For updating a user details'''
 
@@ -118,7 +119,7 @@ def update_user(active_user_id, user_id):
         user = User.query.filter_by(id = active_user_id).first()
         
         if not user:
-            return jsonify({'message': 'No user found!', "status": "404"})
+            return make_response('No such user found', 404)
 
         new_details = request.json
         user.username = new_details["username"]
@@ -130,7 +131,7 @@ def update_user(active_user_id, user_id):
 
 
 @app.route('/users/<int:user_id>', methods = ['DELETE'])
-@token_verify
+@jwt__required
 def delete_user(active_user_id ,user_id):
     '''For deleting a user'''
 
@@ -138,16 +139,16 @@ def delete_user(active_user_id ,user_id):
         user = User.query.filter_by(id=active_user_id).first()
 
         if not user:
-            return jsonify({'message': 'User not found', "status": "404"})
+            return make_response('User not found', 404)
 
         db.session.delete(user)
         db.session.commit()
 
-        return jsonify({'message': 'The user id deleted!', "status": "200 OK"})
+        return make_response('The user is deleted', 200)
 
 
 @app.route('/users/<int:user_id>/question_new', methods = ['POST'])
-@token_verify
+@jwt__required
 def question_new(active_user_id, user_id):
     '''For adding a new question for a particular user'''
 
@@ -174,19 +175,20 @@ def all_questions():
     list_of_ques = []
 
     for question in all_questions:
-        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
+        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, \
+                      'time': question.timestamp}
         list_of_ques.append(a_question)
 
     return jsonify({'questions': list_of_ques, "status": "200 OK"})
 
 
 @app.route('/users/<user_id>/questions',methods = ['GET'])
-@token_verify
+@jwt__required
 def questions(active_user_id, user_id):
     '''For displaying all questions of a particular user'''
 
     if request.method == "GET":
-        questions = Questions.query.filter_by(userid=active_user_id).all()
+        questions = Questions.query.filter_by(userid = active_user_id).all()
 
         if not questions:
             return jsonify({'message': 'No questions found!', "status": "404"})
@@ -194,14 +196,15 @@ def questions(active_user_id, user_id):
     list_of_ques = []
 
     for question in questions:
-        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
+        a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, \
+                      'time': question.timestamp}
         list_of_ques.append(a_question)
 
     return jsonify({'questions': list_of_ques, "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>',methods = ['GET'])
-@token_verify
+@jwt__required
 def a_question_user(active_user_id ,user_id, question_id):
     '''For displaying a question of a particular user'''
 
@@ -211,14 +214,14 @@ def a_question_user(active_user_id ,user_id, question_id):
         if not question:
             return jsonify({'message': 'No question found!', "status": "404"})
             
-
-    a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, 'time': question.timestamp}
+    a_question = {'id': question.id, 'question': question.question,'user_id':question.userid, \
+                  'time': question.timestamp}
 
     return jsonify({'question': a_question, "status": "200 OK"})
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>', methods=['PUT'])
-@token_verify
+@jwt__required
 def update_question(active_user_id ,user_id, question_id):
     '''For updating a question of a partcular user'''
 
@@ -237,17 +240,17 @@ def update_question(active_user_id ,user_id, question_id):
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>', methods = ['DELETE'])
-@token_verify
+@jwt__required
 def delete_question(active_user_id, user_id, question_id):
     '''For deleting a question of a user'''
 
     if request.method == "DELETE":
-        question = Questions.query.filter_by(id=question_id, userid = active_user_id).first()
+        question = Questions.query.filter_by(id = question_id, userid = active_user_id).first()
 
         if not question:
-            return jsonify({'message': 'No question found!', "status": "404"})
+            return make_response('No question forund', 404)
 
         db.session.delete(question)
         db.session.commit()
 
-        return jsonify({'message': 'Question item deleted!', "status": "200"})
+        return make_response('The question is deleted', 200)
