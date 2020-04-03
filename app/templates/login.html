@@ -1,0 +1,24 @@
+
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Login</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=50) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=50) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+
+    <div class="below">
+        <small >Need an account? <a class="ml-2" href="{{ url_for('covid_signup') }}">Sign Up</a></small>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+
+
+As a user,
+I want to be able to search questions based on keywords,
+so that I can get aware about the COVID - 19 virus.
+
+
+As a social worker,
+I want to be able to create my account and add, edit and delete questions,
+so that I can keep repo of all the questions regarding COVID - 19 virus.

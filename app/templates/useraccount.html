@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_logout') }}">Logout</a>
+    </div>
+
+    <h4>Details of user:</h4>
+
+    <div class="user-details">
+        Username:<br>
+        <span class="single-user"> {{user.username}}</span><br>
+        Email:<br>
+        <span class="single-user"> {{user.email}}</span><br>
+
+        <br>
+        <br>
+    
+    </div>
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_updateuser', user_id = user.id) }}">Update</a>
+    </div>
+
+{% endblock %}

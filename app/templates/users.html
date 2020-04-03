@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_signup') }}">Sign Up</a>
+    </div>
+    
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_login') }}">Login</a>
+    </div>
+
+    <h3>List of users registered:</h3>
+
+    <div class="all-users">
+        
+        {% for user in users %}
+            <span class="single-user"> {{user.username}}</span><br>
+        {% endfor %}
+
+        <hr>
+    
+    </div>
+
+{% endblock %}

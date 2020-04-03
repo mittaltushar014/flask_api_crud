@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_logout') }}">Logout</a>
+    </div>
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_user_account_details', user_id = user.id) }}">Account Details</a>
+    </div>
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('covid_new_question_for_account', user_id = user.id) }}">Add Question</a>
+    </div>
+
+    <h4>List of questions of user:</h4>
+
+    <div class="user-questions">
+        
+        {% for question in questions %}
+            <span class="single-user"> {{question.question}}</span><br>
+            <span class="single-user"> {{question.timestamp}}</span><br>
+            
+            <div class="below">
+                <a class="ml-2" href="{{ url_for('covid_user_question_edit', user_id = user.id, question_id = question.id) }}">Edit Question</a>
+            </div>
+
+            <div class="below">
+                <a class="ml-2" href="{{ url_for('covid_user_question_delete', user_id = user.id, question_id = question.id) }}">Delete Question</a>
+            </div>
+
+            <hr><hr>
+        {% endfor %}
+
+        <hr>
+        <hr>
+    
+    </div>
+
+{% endblock %}
