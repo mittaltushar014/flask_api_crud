@@ -6,39 +6,6 @@ from flask_login import UserMixin
 from app.search import add_to_index, remove_from_index, query_index
 
 
-@login.user_loader
-def load_user(id):
-    return User.query.get(int(id))
-
-
-class User(UserMixin, db.Model):
-    '''Model for the user'''
-    
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), index=True, unique=True)
-    email = db.Column(db.String(50), index=True, unique=True)
-    password = db.Column(db.String(50))
-
-    def __repr__(self):
-        return '<User {} {}>'.format(self.id, self.username)       
-
-
-class Questions(db.Model):
-    '''Model for the questions'''
-
-    __searchable__ = ['question']
-
-    id = db.Column(db.Integer, primary_key = True)
-    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    question = db.Column(db.String(300))
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
-
-    def __repr__(self):
-        return '<Question {} {}>'.format(self.id, self.question)
-     
-
-'''
-
 class SearchableMixin(object):
     @classmethod
     def search(cls, expression, page):
@@ -76,20 +43,53 @@ class SearchableMixin(object):
         for obj in cls.query:
             add_to_index(cls.__tablename__, obj)
 
-DB.event.listen(DB.session, 'before_commit', SearchableMixin.before_commit)
-DB.event.listen(DB.session, 'after_commit', SearchableMixin.after_commit)
 
-class Answers(SearchableMixin, db.Model):
-    Model for the answers
+db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
 
-    __searchable__ = ['answer_of_ques']
 
-    id = db.Column(db.Integer, primary_key = True)
-    quesid = db.Column(db.Integer)
-    answer_of_ques = db.Column(db.String(500))
-    timestamp = db.Column(db.DateTime, index = True, datetime = datetime.utcnow)
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
+class User(UserMixin, db.Model):
+    '''Model for the user'''
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), index=True, unique=True)
+    email = db.Column(db.String(50), index=True, unique=True)
+    password = db.Column(db.String(50))
 
     def __repr__(self):
-        return '<Answer {} {}>'.format(self.id, self.answer_of_ques)
+        return '<User --> ID ->{} USERNAME ->{}>'.format(self.id, self.username)       
 
-'''
+
+class Questions(SearchableMixin, db.Model):
+    '''Model for the questions'''
+
+    __searchable__ = ['question']
+
+    id = db.Column(db.Integer, primary_key = True)
+    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    question = db.Column(db.String(300))
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+
+    def __repr__(self):
+        return '<Question --> ID ->{} QUESTION->{} USERID->{}>'.format(self.id, self.question , self.userid)
+     
+
+class Answers(db.Model):
+    '''Model for the answers'''
+
+    #__searchable__ = ['answer_of_ques']
+
+    id = db.Column(db.Integer, primary_key = True)
+    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    quesid = db.Column(db.Integer, db.ForeignKey('questions.id'))
+    answer_of_ques = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+
+    def __repr__(self):
+        return '<Answer --> ID->{} ANSWER->{} USERID->{} QUESTIONID->{}>'.format(self.id, self.answer_of_ques, self.userid, self.quesid)
+

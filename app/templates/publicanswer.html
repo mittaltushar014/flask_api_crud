@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="users-and-questions">
+        <ul>
+            <li><a class="users-all" href="{{ url_for('web_all_questions') }}">Back</a></li>
+        </ul><hr><hr>
+    </div>
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('web_signup') }}">Sign Up</a>
+    </div>
+    
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('web_login') }}">Login</a>
+    </div>
+
+
+    <h3>Answer:</h3>
+
+    <div class="all-questions">
+            -> <span class="single-user"> {{answer.answer_of_ques}}</span>
+        <hr>
+    </div>
+
+{% endblock %}

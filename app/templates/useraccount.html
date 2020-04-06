@@ -3,24 +3,22 @@
 {% block content %}
 
     <div class="below">
-        <a class="ml-2" href="{{ url_for('covid_logout') }}">Logout</a>
+        <a class="ml-2" href="{{ url_for('web_logout') }}">Logout</a>
     </div>
 
     <h4>Details of user:</h4>
 
     <div class="user-details">
         Username:<br>
-        <span class="single-user"> {{user.username}}</span><br>
+        <span class="single-user"> {{user.username}}</span><br><br>
         Email:<br>
         <span class="single-user"> {{user.email}}</span><br>
-
-        <br>
-        <br>
+        <hr>
     
     </div>
 
     <div class="below">
-        <a class="ml-2" href="{{ url_for('covid_updateuser', user_id = user.id) }}">Update</a>
+        <a class="ml-2" href="{{ url_for('web_update_user', user_id = user.id) }}">Update</a>
     </div>
 
 {% endblock %}

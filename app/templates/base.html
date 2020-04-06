@@ -2,33 +2,29 @@
 <html>
   <head>
     <title>COVID - 19 Repo</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="">
   </head>
   <body>
     <header>
         <div class = upper-tab>
             <div class="logo">
-                <strong>COVID - 19</strong>
+                <h1><strong>COVID - 19</strong><h1>
             </div> 
         </div> 
     </header>
     <hr>
 
-    <div class="users-and-questions">
-        <ul>
-            <li><a class="users-all" href="{{ url_for('covid_all_users') }}">All Users</a></li>
-            <li><a class="users-all" href="{{ url_for('covid_all_questions') }}">All Questions</a></li>
-        </ul>
-    </div>
-
     {% with messages = get_flashed_messages() %}
     {% if messages %}
+    
     <ul>
         {% for message in messages %}
         <li>{{ message }}</li>
         {% endfor %}
     </ul>
+
     {% endif %}
+
     {% endwith %}
     
     {% block content %}

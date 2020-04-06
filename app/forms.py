@@ -10,6 +10,8 @@ from flask import request
 
 
 class RegistrationForm(FlaskForm):
+    '''Registration form for a user'''
+
     username = StringField('Username', validators = [DataRequired()])
     email = StringField('Email', validators = [DataRequired(), Email()])
     password = PasswordField('Password', validators = [DataRequired()])
@@ -25,13 +27,16 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    '''Login form for a user'''
+
     username = StringField('Username', validators = [DataRequired()])
     password = PasswordField('Password', validators = [DataRequired()])
-    remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 
 class UpdateUserForm(FlaskForm):
+    '''Update form for a user'''
+
     username = StringField('New Username', validators = [DataRequired()])
     email = StringField('New Email', validators = [DataRequired(), Email()])
     submit = SubmitField('Update Details')    
@@ -46,16 +51,22 @@ class UpdateUserForm(FlaskForm):
 
 
 class QuestionForm(FlaskForm):
-    question = TextAreaField('New Question', validators=[DataRequired()])
+    '''Form for adding and updating question'''
+
+    question = TextAreaField('Question', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
 class AnswerForm(FlaskForm):
+    '''Form for adding and updating answer'''
+
     answer = TextAreaField('Answer', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
 class SearchForm(FlaskForm):
+    '''Form for search'''
+
     q = StringField(_l('Search'), validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):

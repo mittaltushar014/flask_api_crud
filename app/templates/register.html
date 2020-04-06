@@ -2,7 +2,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sign Up</h1>
+
+    <div class="users-and-questions">
+        <ul>
+            <li><a class="users-all" href="{{ url_for('web_all_users') }}">All Users</a></li>
+            <li><a class="users-all" href="{{ url_for('web_all_questions') }}">All Questions & Answers</a></li>
+        </ul><hr><hr>
+    </div>
+
+
+    <h2>Sign Up</h2>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
@@ -22,9 +31,9 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
-    <br><br>
+    <br>
     <div class="below">
-        Already have an account? <a class="ml-2" href="{{ url_for('covid_login') }}">Login</a>
+        Already have an account? <a class="ml-2" href="{{ url_for('web_login') }}">Login</a>
     </div>
 {% endblock %}
 

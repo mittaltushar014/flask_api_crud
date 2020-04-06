@@ -2,35 +2,12 @@
 
 {% block content %}
 
-    <h3>Hi {{user.username}}!, You are welcome</h3><br>
-    <h2>
     <div class="below">
         <a class="ml-2" href="{{ url_for('web_logout') }}">Logout</a>
     </div>
 
-    <div class="below">
-        <a class="ml-2" href="{{ url_for('web_user_account_details', user_id = user.id) }}">Account Details</a>
-    </div>
+    {%if questions %}
 
-    <div class="below">
-        <a class="ml-2" href="{{ url_for('web_new_question_for_account', user_id = user.id) }}">Add Question</a>
-    </div>
-    <br>
-    </h2>
-
-    {% if g.search_form %}
-        <form class="navbar-form navbar-left" method="get" action="{{ url_for('search') }}">
-            <div class="form-group">
-                {{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}
-            </div>
-        </form>
-    {% endif %}
-
-
-    <h2>List of questions:</h2>
-
-    <div class="user-questions">
-        
         {% for question in questions %}
             <span class="single-user"> {{question.question}}</span><br>
             <span class="single-user"> {{question.timestamp}}</span><hr>
@@ -48,7 +25,11 @@
             </div>
             <hr>
         {% endfor %}
-    
-    </div>
+
+    {% else %}
+
+        <h2>No Questions</h2>
+
+    {% endif %}
 
 {% endblock %}

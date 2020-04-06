@@ -6,12 +6,12 @@
         <a class="ml-2" href="{{ url_for('web_logout') }}">Logout</a>
     </div>
 
-    <h1>Add question:</h1>
+    <h1>Edit answer:</h1>
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
-            {{ form.question.label }}<br>
-            {{ form.question(size=100) }}<br>
+            {{ form.answer.label }}<br>
+            {{ form.answer(size=300) }}<br>
             
         </p>
        

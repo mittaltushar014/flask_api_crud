@@ -3,11 +3,11 @@
 
 {% block content %}
     <div class="below">
-        <a class="ml-2" href="{{ url_for('covid_logout') }}">Logout</a>
+        <a class="ml-2" href="{{ url_for('web_logout') }}">Logout</a>
     </div>
 
     <div class="below">
-        <a class="ml-2" href="{{ url_for('covid_user_account_delete'), user_id = user.id }}">Delete User</a>
+        <a class="ml-2" href="{{ url_for('web_delete_user', user_id = user.id) }}">Delete User</a>
     </div>
 
     <h1>Update details:</h1>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('web_logout') }}">Logout</a>
+    </div>
+
+    <div class="below">
+        <a class="ml-2" href="{{ url_for('web_new_answer_for_account', user_id = user.id, question_id = question.id) }}">Add Answer</a>
+    </div>
+
+    <h4>Answer:</h4><br>
+
+    <div class="user-answer">
+        
+        <span class="single-user"> {{answer.answer_of_ques}}</span><br>
+
+        <div class="below">
+            <a class="ml-2" href="{{ url_for('web_user_answer_edit', user_id = user.id, question_id = question.id) }}">Edit Answer</a>
+        </div>
+
+        <div class="below">
+            <a class="ml-2" href="{{ url_for('web_user_answer_delete', user_id = user.id, question_id = question.id) }}">Delete Answer</a>
+        </div>
+        <hr>
+    
+    </div>
+
+{% endblock %}
