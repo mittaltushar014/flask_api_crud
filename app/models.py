@@ -82,8 +82,6 @@ class Questions(SearchableMixin, db.Model):
 class Answers(db.Model):
     '''Model for the answers'''
 
-    #__searchable__ = ['answer_of_ques']
-
     id = db.Column(db.Integer, primary_key = True)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     quesid = db.Column(db.Integer, db.ForeignKey('questions.id'))

@@ -16,3 +16,14 @@ question    --- string(200)    ---
 Datetime    --- datetime       --- date and time of posting of question
 
 
+Answers - Table :
+
+id                  --- int            --- primary key(auto incremented)
+userid              --- int            --- foreign key(linked with id in user table)
+quesid              --- int            --- foreign key(linked with id in questions table)
+answer_of_ques      --- string(200)    --- 
+Datetime            --- datetime       --- date and time of posting of answer
+
+
+
+

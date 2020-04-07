@@ -1,9 +1,9 @@
-Project implementing Create, Read, Update, Delete features for Users and the questions posted by them using Flask and API from backend.
+Project implementing Create, Read, Update, Delete features for Users and their questions and answers posted by them using Flask and API from backend and frontend.   
 
 ####Features:
 >Register user
 
->Browse all questions and users
+>Browse all questions and answers and users.    
 
 >Create a user              
 >Update a user     
@@ -15,47 +15,83 @@ Project implementing Create, Read, Update, Delete features for Users and the que
 >Delete a question  
 >View a question              
 
+>Post an answer              
+>Edit an answer     
+>Delete an answer  
+>View an answer              
+
+
 ####Technologies Used:
 
 Python  
 Flask   
 SQLAlchemy  
 SQLite  
-Postman 
+Postman     
 
-####How to:
->Install python 3.6.
+####How to: 
+>Install python 3.6.    
 
->Run in termainal:
+>Run in termainal:  
 
-    pip install -r requirements.txt
+    pip install -r requirements.txt     
 
->Read documentation for how to create url for getting the response.
+>Read documentation for how to create url for getting the response.     
 
->Run in terminal:
-
-    flask run
-
->Do API hits using Postman.
-
-
-####Directory Structure:    
+>Run in terminal:   
     
+    flask run   
+
+>Do API hits using Postman.     
+>Open frontend and use the website.     
+
+
+####Directory Structure:     
+          
 .   
 ├── app     
-│   ├── __init__.py  
+│   ├── config.py   
+│   ├── forms.py    
+│   ├── __init__.py     
 │   ├── models.py   
-│   └── routes.py   
+│   ├── routes.py   
+│   ├── search.py   
+│   └── templates   
+│       ├── base.html   
+│       ├── editanswer.html     
+│       ├── editquestion.html   
+│       ├── login.html  
+│       ├── newanswer.html  
+│       ├── newquestion.html    
+│       ├── publicanswer.html   
+│       ├── questions.html  
+│       ├── register.html   
+│       ├── search.html     
+│       ├── updateuser.html     
+│       ├── useraccount.html    
+│       ├── useranswer.html     
+│       ├── userhome.html       
+│       └── users.html      
 ├── app.db  
 ├── config.py   
 ├── Documentation   
 │   ├── API_Documentation   
 │   └── DB_Documentation    
-├── question_work.py    
+├── main_run.py     
+├── Postman_Collection      
+│   └── flask_api_crud.postman_collection.json  
 ├── README.md   
-└── requirements.txt    
-        
-
+├── requirements.txt    
+├── User_Stories    
+│   └── user_story.txt  
+└── Wireframes  
+    ├── Account_Page.png    
+    ├── Login.png   
+    ├── SignUp.png  
+    ├── User_Account_Details_Update.png     
+    └── User_account_first_page.png     
+            
+    
 ####API Documentation
 
 
@@ -257,28 +293,36 @@ Deleting a user
       Content:{status:"User deleted!”}
     • ERROR RESPONSE
       Code:400 BAD REQUEST
-      Content: {status:"Invalid User id"}
+      Content: {status:"Invalid User id"}   
 
 
+    
+####Database Documentation      
+    
+Schema for Database:    
+    
+User - Table :  
+    
+id          --- int            --- primary key(auto incremented)    
+name        --- string(25)     --- unique value     
+email       --- string(25)     --- unique value     
+password    --- string(25)     --- hashed password  
+    
 
-####Database Documentation
-
-Schema for Database:
-
-User - Table :
-
-id          --- int            --- primary key(auto incremented)
-name        --- string(25)     --- unique value
-email       --- string(25)     --- unique value
-password    --- string(25)     --- hashed password
-
-
-Questions - Table :
-
-id          --- int            --- primary key(auto incremented)
-user_id     --- int            --- foreign key(linked with id in user table)
-question    --- string(200)    --- 
-Datetime    --- datetime       --- date and time of posting of question
+Questions - Table :     
+    
+id          --- int            --- primary key(auto incremented)    
+user_id     --- int            --- foreign key(linked with id in user table)    
+question    --- string(200)    ---  
+Datetime    --- datetime       --- date and time of posting of question     
+        
+Answers - Table :   
+    
+id                  --- int            --- primary key(auto incremented)    
+userid              --- int            --- foreign key(linked with id in user table)    
+quesid              --- int            --- foreign key(linked with id in questions table)   
+answer_of_ques      --- string(200)    ---  
+Datetime            --- datetime       --- date and time of posting of answer   
 
 
 

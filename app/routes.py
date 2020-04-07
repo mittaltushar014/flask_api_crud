@@ -19,10 +19,11 @@ from flask_babel import _, get_locale
 
 @app.before_request
 def before_request():
+    '''For making active the form so that changes can be seen and made in elasticsearch table'''
+
     if current_user.is_authenticated:
         g.search_form = SearchForm()
     g.locale = str(get_locale())
-
 
 
 @app.route("/")
@@ -57,8 +58,8 @@ def web_login():
     if form.validate_on_submit():
 
         user = User.query.filter_by(username = form.username.data).first()
-        questions = Questions.query.filter_by(userid = user.id)
-        answers = Answers.query.filter_by(userid = user.id)
+        questions = Questions.query.filter_by(userid = user.id).all()
+        answers = Answers.query.filter_by(userid = user.id).all()
 
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
@@ -104,16 +105,6 @@ def web_public_answer(question_id):
     return render_template('publicanswer.html', title='Answer', answer = answer)
 
 
-'''
-@app.route('/covid/user/<int:id>')
-def covid_userhome(username, id):
-    """To display current user details"""
-
-    user = User.query.filter_by(name=username).first_or_404()
-    questions = Questions.query.filter_by(user_id=current_user.id)
-    return render_template('user.html', user=user, questions=questions, answers=answers)
-'''
-
 @app.route('/users/<int:user_id>')
 @login_required
 def web_user_account_details(user_id):
@@ -124,7 +115,7 @@ def web_user_account_details(user_id):
     return render_template('useraccount.html', user = user)
 
 
-@app.route("/users/<int:user_id>/update", methods=['GET', 'POST'])
+@app.route("/users/<int:user_id>/edit", methods=['GET', 'POST'])
 @login_required
 def web_update_user(user_id):
     '''For updating a user'''
@@ -152,14 +143,22 @@ def web_update_user(user_id):
 
 
 
-@app.route('/users/<int:user_id>', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/delete', methods=['GET', 'POST'])
 @login_required
 def web_delete_user(user_id):
     """To delete the user"""
 
     user = User.query.filter_by(id=user_id).first()
+    questions = Questions.query.filter_by(userid=user_id).all()
+    answers = Answers.query.filter_by(userid=user_id).all()
 
     db.session.delete(user)
+
+    if questions:
+        db.session.delete(questions)
+    if answers:    
+        db.session.delete(answers)
+
     db.session.commit()
 
     flash(f'User Deleted', 'success')
@@ -187,10 +186,12 @@ def web_new_question_for_account(user_id):
         answers_user = Answers.query.filter_by(userid=user_id).all()
 
         flash('New question is added!')
+        
         if answers_user:
             return  render_template('userhome.html', title='User Home',user = user, questions = questions_user, answers = answers_user)
         else:
             return  render_template('userhome.html', title='User Home',user = user, questions = questions_user)
+    
     return render_template('newquestion.html', title='New Question', form=form)
 
 
@@ -206,13 +207,10 @@ def web_user_question_edit(user_id, question_id):
         
     if form.validate_on_submit():
 
-        question = Questions.query.filter_by(id = question_id).first()
-        print(question.question)            
+        question = Questions.query.filter_by(id = question_id).first()            
         question.question=form.question.data
-        print(question.question) 
         
         db.session.commit()
-        print(question.question) 
 
         questions_user = Questions.query.filter_by(userid = user_id).all()
         answers_user = Answers.query.filter_by(userid = user_id).all()
@@ -227,16 +225,20 @@ def web_user_question_edit(user_id, question_id):
     return render_template('editquestion.html', title = 'Edit Question', form = form, user = user)
 
 
-
 @app.route('/users/<int:user_id>/questions/<int:question_id>/delete', methods=['GET', 'POST'])
 @login_required
 def web_user_question_delete(user_id, question_id):
     '''To delete a question'''
 
     question = Questions.query.filter_by(id = question_id).first()
-    user = User.query.filter_by(id = user_id).first()   
+    user = User.query.filter_by(id = user_id).first()
+    answers = Answers.query.filter_by(quesid=question_id).all()
     
     db.session.delete(question)
+    
+    if answers:
+        db.session.delete(answers)
+
     db.session.commit()
 
     flash(f'Question Deleted', 'success')
@@ -244,12 +246,16 @@ def web_user_question_delete(user_id, question_id):
     questions_user = Questions.query.filter_by(userid = user_id).all()
     answers_user = Answers.query.filter_by(userid = user_id).all()
 
-    return render_template('userhome.html', user = user, questions = questions_user, answers = answers_user)
+    if answers_user:
+        return render_template('userhome.html', user = user, questions = questions_user, answers = answers_user)
+    else:
+        return render_template('userhome.html', user = user, questions = questions_user)
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>/answers')
 @login_required
 def web_user_question_answer(user_id, question_id):
+    '''To display answer for a particular question for a particular user'''
 
     answer = Answers.query.filter_by(quesid = question_id).first()
     user = User.query.filter_by(id = user_id).first()
@@ -261,7 +267,7 @@ def web_user_question_answer(user_id, question_id):
 @app.route('/users/<int:user_id>/questions/<int:question_id>/answer_new', methods=['GET', 'POST'])
 @login_required
 def web_new_answer_for_account(user_id, question_id):
-    """Function to add answer for a particular question"""
+    """To add answer for a particular question"""
 
     form = AnswerForm()
 
@@ -283,17 +289,13 @@ def web_new_answer_for_account(user_id, question_id):
     return render_template('newanswer.html', title='New Answer', form=form)
 
 
-
-
 @app.route('/users/<int:user_id>/questions/<question_id>/answers/edit', methods=['GET', 'POST'])
 @login_required
 def web_user_answer_edit(user_id, question_id):
     '''To update an answer'''
 
-    
     user = User.query.filter_by(id = user_id).first()   
     answer= Answers.query.filter_by(userid = user_id, quesid = question_id).first()
-    print(answer.answer_of_ques)
     form = AnswerForm()
     form.answer.data = answer.answer_of_ques
         
@@ -312,7 +314,6 @@ def web_user_answer_edit(user_id, question_id):
         return render_template('userhome.html', user = user, questions = questions_user, answers = answers_user)
 
     return render_template('editanswer.html', title = 'Edit Answer', form = form, user = user)
-
 
 
 @app.route('/users/<int:user_id>/questions/<question_id>/answers/delete', methods=['GET', 'POST'])
@@ -359,9 +360,6 @@ def search():
         return render_template('search.html', title='Search', user=user_this)
 
 
-
-
-#--------------------------Backend User and Questions Work-------------------------------------------------------------
 
 
 
@@ -442,14 +440,14 @@ def all_users():
         users_data = User.query.all()
 
         if not users_data:
-            return jsonify({'message': 'No user present in table!', "status": "404"})
+            return {'message': 'No user present in table!'}, 404
 
         print(users_data)
         list_data = []
         for user in users_data:
             user_data1 = {"id":user.id, "username":user.username, "email": user.email}
             list_data.append(user_data1)
-        return jsonify({"response:" : list_data, "status": "200 OK"})
+        return {"response:" : list_data}, 200
 
 
 @app.route('/api/users/<int:user_id>',methods = ['GET'])
@@ -465,7 +463,7 @@ def user(active_user_id ,user_id):
 
     a_user = {'id': user.id, 'username': user.username, 'email': user.email}
     
-    return jsonify({'user': a_user, "status": "200 OK"})        
+    return {'user': a_user}, 200        
 
 
 @app.route('/api/users/<int:user_id>', methods = ['PUT'])
@@ -496,11 +494,16 @@ def delete_user(active_user_id ,user_id):
 
     if request.method == "DELETE":
         user = User.query.filter_by(id=active_user_id).first()
+        questions = Questions.query.filter_by(userid=active_user_id).all()
+        answers = Auestions.query.filter_by(userid=active_user_id).all()
+        
 
         if not user:
             return make_response('User not found', 404)
 
         db.session.delete(user)
+        db.session.delete(questions)
+        db.session.delete(answers)
         db.session.commit()
 
         return make_response('The user is deleted', 200)
@@ -605,21 +608,17 @@ def delete_question(active_user_id, user_id, question_id):
 
     if request.method == "DELETE":
         question = Questions.query.filter_by(id = question_id, userid = active_user_id).first()
+        answers = Answers.query.filter_by(quesid = question_id).all()
 
         if not question:
             return make_response('No question forund', 404)
 
         db.session.delete(question)
+        db.session.delete(answers)
         db.session.commit()
 
         return make_response('The question is deleted', 200)
 
-
-
-
-
-
-#----------------------------------Backend Answers Work -----------------------------------------------
 
 
 
@@ -735,6 +734,3 @@ def delete_answer(active_user_id, user_id, question_id):
         db.session.commit()
 
         return make_response('The answer is deleted', 200)
-
-
-#---------------------------------END OF WORK------------------------------------------------------
