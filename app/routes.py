@@ -1,7 +1,8 @@
 '''For directing the various API hits and the action to be performed on hits'''
 
+import requests
 from flask import render_template, flash, redirect, url_for, request, Flask, jsonify, make_response, request, \
-     g, url_for, abort, current_app
+     g, url_for, abort, current_app, json
 from flask_login import logout_user, login_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
@@ -16,6 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (jwt_required, get_jwt_identity, create_access_token, get_raw_jwt)
 from flask_babel import _, get_locale
 
+START = "http://127.0.0.1:5000"
 
 @app.before_request
 def before_request():
@@ -26,8 +28,8 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@app.route("/")
-@app.route("/signup", methods=['GET', 'POST'])
+@app.route('/')
+@app.route('/signup', methods=['GET', 'POST'])
 def web_signup():
     '''For registering a user'''
 
@@ -35,17 +37,24 @@ def web_signup():
 
     if form.validate_on_submit():
 
-        hashed_password = generate_password_hash(form.password.data, method = 'sha256')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        url = START + url_for('signup')
 
-        db.session.add(user)
-        db.session.commit()
+        payload = {}
+        payload['username'] = request.form['username']
+        payload['email'] = request.form['email']
+        payload['password'] = request.form['password']
+        print(payload)
+       
+        headers = {'Content-type': 'application/json'} 
+        
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
 
         flash(f'Your account has been created! You are now able to login', 'success')
 
         return redirect(url_for('web_login'))
-
+    
     return render_template('register.html', title='Register', form=form)
+
 
 
 @app.route("/")
@@ -232,12 +241,11 @@ def web_user_question_delete(user_id, question_id):
 
     question = Questions.query.filter_by(id = question_id).first()
     user = User.query.filter_by(id = user_id).first()
-    answers = Answers.query.filter_by(quesid=question_id).all()
+    answers = Answers.query.filter_by(quesid = question_id).all()
     
     db.session.delete(question)
     
-    if answers:
-        db.session.delete(answers)
+    db.session.delete(answers)
 
     db.session.commit()
 
@@ -414,7 +422,7 @@ def login():
 
         return {'hashed_token': hashed_token.decode('UTF-8')}, 200
 
-@app.route('/api')
+
 @app.route('/api/signup', methods = ['POST'])
 def signup():
     '''For adding user to User table'''
@@ -429,7 +437,7 @@ def signup():
         db.session.add(newuser)
         db.session.commit()
 
-        return jsonify({"response":"User " + username_sent + " added successfully!", "status": "200 OK"})
+        return {"response":"User " + username_sent + " added successfully!"}, 200
 
 
 @app.route('/api/users', methods = ['GET'])
@@ -734,3 +742,12 @@ def delete_answer(active_user_id, user_id, question_id):
         db.session.commit()
 
         return make_response('The answer is deleted', 200)
+
+
+@app.route('/DisCussApi/index/refresh', methods=['POST'])
+def refresh_index():
+    update_es.delay()
+    return jsonify(msg="Data Update Initiated")
+
+if __name__ == '__main__':
+    app.run(debug=True)
