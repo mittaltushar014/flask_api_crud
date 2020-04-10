@@ -7,6 +7,8 @@ from flask_login import LoginManager
 from elasticsearch import Elasticsearch
 from config import Config
 from flask_babel import Babel, lazy_gettext as _l
+from celery import Celery
+from config import CELERY_CONFIG
 
 
 db = SQLAlchemy()
@@ -18,6 +20,10 @@ login.login_view = 'web_login'
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+
+celery = Celery(app.name)
+celery.conf.update(CELERY_CONFIG)
 
 db.init_app(app)
 migrate.init_app(app, db)

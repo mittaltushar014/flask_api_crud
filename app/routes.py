@@ -9,6 +9,7 @@ from app import app, db
 from app.forms import  RegistrationForm, LoginForm, QuestionForm, AnswerForm, SearchForm, UpdateUserForm
 from app.models import User, Questions, Answers
 from app.config import Config
+from app.background_jobs import update_covid_stats
 from functools import wraps
 import jwt
 import uuid
@@ -16,6 +17,7 @@ import datetime
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (jwt_required, get_jwt_identity, create_access_token, get_raw_jwt)
 from flask_babel import _, get_locale
+
 
 START = "http://127.0.0.1:5000"
 
@@ -245,7 +247,8 @@ def web_user_question_delete(user_id, question_id):
     
     db.session.delete(question)
     
-    db.session.delete(answers)
+    if answers:
+        db.session.delete(answers)
 
     db.session.commit()
 
@@ -510,8 +513,13 @@ def delete_user(active_user_id ,user_id):
             return make_response('User not found', 404)
 
         db.session.delete(user)
-        db.session.delete(questions)
-        db.session.delete(answers)
+        
+        if questions:
+            db.session.delete(questions)
+        
+        if answers:
+            db.session.delete(answers)
+        
         db.session.commit()
 
         return make_response('The user is deleted', 200)
@@ -622,7 +630,10 @@ def delete_question(active_user_id, user_id, question_id):
             return make_response('No question forund', 404)
 
         db.session.delete(question)
-        db.session.delete(answers)
+
+        if answers:
+            db.session.delete(answers)
+        
         db.session.commit()
 
         return make_response('The question is deleted', 200)
@@ -744,10 +755,13 @@ def delete_answer(active_user_id, user_id, question_id):
         return make_response('The answer is deleted', 200)
 
 
-@app.route('/DisCussApi/index/refresh', methods=['POST'])
-def refresh_index():
-    update_es.delay()
-    return jsonify(msg="Data Update Initiated")
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/api/covid_stats', methods=['PUT'])
+def update_covid_data_api():
+    '''Handles PUT requests to update the Covid infection stats from a csv file
+    on the internet(the task is run asynchronously), and GET requests to check
+    the task status.'''
+    task = update_covid_stats.delay(app.config['COVID_DATA_INDEX'])
+    return {"msg": "Updating covid stats in the background",
+            "task_id": task.task_id}
+

@@ -1,4 +1,5 @@
 Project implementing Create, Read, Update, Delete features for Users and their questions and answers posted by them using Flask and API from backend and frontend.   
+In frontend searching for questions and answers functionality is also added.
 
 ####Features:
 >Register user
@@ -20,6 +21,8 @@ Project implementing Create, Read, Update, Delete features for Users and their q
 >Delete an answer  
 >View an answer              
 
+>Search in questions and answers.   
+
 
 ####Technologies Used:
 
@@ -29,8 +32,14 @@ SQLAlchemy
 SQLite  
 Postman     
 
-####How to: 
+####How to:     
 >Install python 3.6.    
+>Install redis:     
+    wget http://download.redis.io/redis-stable.tar.gz       
+    tar xvzf redis-stable.tar.gz        
+    cd redis-stable     
+    make    
+    sudo make install   
 
 >Run in termainal:  
 
@@ -38,15 +47,21 @@ Postman
 
 >Read documentation for how to create url for getting the response.     
 
+>Start Elasticsearch, Redis and Celery.     
+    Elasticsearch -> sudo -i service elasticsearch start    
+    Celery -> celery -A app.celery worker --loglevel=info   
+    Redis -> redis-server   
+
 >Run in terminal:   
     
     flask run   
 
 >Do API hits using Postman.     
+
 >Open frontend and use the website.     
 
 
-####Directory Structure:     
+####Directory Structure:        
           
 .   
 ├── app     
@@ -91,211 +106,6 @@ Postman
     ├── User_Account_Details_Update.png     
     └── User_account_first_page.png     
             
-    
-####API Documentation
-
-
-Creating question of a user
-    
-    • URL
-      users/user_id/question_new/
-    • METHOD
-      POST
-    • URL Params
-      Required
-      id = user_id
-    • DATA Params
-      Required
-      question=”The question asked”
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:”New Question added!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:”Invalid User_id to post question” or status: "No content of question!"}
-
-Getting a question of a user
-
-    • URL
-      users/user_id/questions/question_id 
-    • METHOD
-      GET
-    • URL Params
-      Required
-      id's = [question_id, user_id]
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{question:”The content of question”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:”invalid id provided}
-
-Getting all questions of a user
-
-    • URL
-      users/user_id/questions
-    • METHOD
-      GET
-    • URL Params
-      Required
-      id = [user_id]
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{question:”The content of questions”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:”invalid id provided}
-
-Getting all questions of all users
-
-    • URL
-      users/questions
-    • METHOD
-      GET
-    • URL Params
-      Required
-      None
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{question:”The content of questions”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:”invalid id provided}
-      
-
-Updating a question of a user
-    
-    • URL
-      users/user_id/questions/question_id
-    • METHOD
-      PUT
-    • URL Params
-      Required
-      id’s = [user_id, question_id]
-    • DATA Params
-      Required
-      question="mew content of question"
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:”Question edited!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"Invalid User id or Question id"}
-    
-Deleting Questions
-    
-    • URL
-      users/user_id/questions/question_id
-    • METHOD
-      DELETE
-    • URL Params
-      Required
-      id’s = [user_id, question_id]
-    • DATA Params
-      None
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:”Question deleted!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"Invalid User id or Question id"}
-
-
-
-Creating a user
-    
-    • URL
-      signup/
-    • METHOD
-      POST
-    • URL Params
-      Required
-      None
-    • DATA Params
-      Required
-      username="the name of user"
-      email="email of user"
-      password="the password of user"
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:”New User added!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:”Invalid"}
-
-Getting all users
-
-    • URL
-      /users
-    • METHOD
-      GET
-    • URL Params
-      Required
-      None
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{username:”The name of user”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"invalid"}
-
-Getting details of a particular user
-
-    • URL
-      /users/user_id
-    • METHOD
-      GET
-    • URL Params
-      Required
-      id=[user_id]
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{username:”The name of user”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"invalid"}
-
-Updating a user
-    
-    • URL
-      users/user_id
-    • METHOD
-      PUT
-    • URL Params
-      Required
-      id’s = [user_id]
-    • DATA Params
-      Required
-      username="new name of user"
-      email="new email of user"
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:"User updated!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"Invalid User id"}
-
-
-Deleting a user
-    
-    • URL
-      users/user_id
-    • METHOD
-      DELETE
-    • URL Params
-      Required
-      id’s = [user_id]
-    • DATA Params
-      Required
-      None
-    • SUCCESS RESPONSE
-      Code: 200
-      Content:{status:"User deleted!”}
-    • ERROR RESPONSE
-      Code:400 BAD REQUEST
-      Content: {status:"Invalid User id"}   
-
-
     
 ####Database Documentation      
     
