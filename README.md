@@ -133,10 +133,3 @@ userid              --- int            --- foreign key(linked with id in user ta
 quesid              --- int            --- foreign key(linked with id in questions table)   
 answer_of_ques      --- string(200)    ---  
 Datetime            --- datetime       --- date and time of posting of answer   
-
-
-
-      
-      
-      
-    

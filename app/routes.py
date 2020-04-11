@@ -19,8 +19,6 @@ from flask_jwt_extended import (jwt_required, get_jwt_identity, create_access_to
 from flask_babel import _, get_locale
 
 
-START = "http://127.0.0.1:5000"
-
 @app.before_request
 def before_request():
     '''For making active the form so that changes can be seen and made in elasticsearch table'''
@@ -30,33 +28,27 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@app.route('/')
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route("/")
+@app.route("/signup", methods=['GET', 'POST'])
 def web_signup():
+
     '''For registering a user'''
 
     form = RegistrationForm()
 
     if form.validate_on_submit():
 
-        url = START + url_for('signup')
+        hashed_password = generate_password_hash(form.password.data, method = 'sha256')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
 
-        payload = {}
-        payload['username'] = request.form['username']
-        payload['email'] = request.form['email']
-        payload['password'] = request.form['password']
-        print(payload)
-       
-        headers = {'Content-type': 'application/json'} 
-        
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        db.session.add(user)
+        db.session.commit()
 
         flash(f'Your account has been created! You are now able to login', 'success')
 
         return redirect(url_for('web_login'))
-    
-    return render_template('register.html', title='Register', form=form)
 
+    return render_template('register.html', title='Register', form=form)
 
 
 @app.route("/")
@@ -164,11 +156,8 @@ def web_delete_user(user_id):
     answers = Answers.query.filter_by(userid=user_id).all()
 
     db.session.delete(user)
-
-    if questions:
-        db.session.delete(questions)
-    if answers:    
-        db.session.delete(answers)
+    db.session.delete(questions)
+    db.session.delete(answers)
 
     db.session.commit()
 
@@ -763,4 +752,3 @@ def update_covid_data_api():
     task = update_covid_stats.delay(app.config['COVID_DATA_INDEX'])
     return {"msg": "Updating covid data in the background",
             "task_id": task.task_id}
-

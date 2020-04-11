@@ -6,13 +6,11 @@ from celery.schedules import crontab
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SEARCH_INDEX = 'data_covid'
-    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL') or "http://localhost:9200"
-   
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SQLALCHEMY_DATABASE_URI = "postgres://postgres:db-flask123@flask-db.ckgbqi9rzpou.us-east-2.rds.amazonaws.com:5432/postgres"    
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    ELASTICSEARCH_URL = "vpc-flask-es-zbr5naqwca7hbqcjypjsbkvir4.us-east-2.es.amazonaws.com:80"
     
     SEARCH_INDEX = 'forum_data'
 
