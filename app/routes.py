@@ -758,10 +758,9 @@ def delete_answer(active_user_id, user_id, question_id):
 
 @app.route('/api/covid_stats', methods=['PUT'])
 def update_covid_data_api():
-    '''Handles PUT requests to update the Covid infection stats from a csv file
-    on the internet(the task is run asynchronously), and GET requests to check
-    the task status.'''
+    '''Handles PUT requests to update the Covid infection stats from a csv file.'''
+
     task = update_covid_stats.delay(app.config['COVID_DATA_INDEX'])
-    return {"msg": "Updating covid stats in the background",
+    return {"msg": "Updating covid data in the background",
             "task_id": task.task_id}
 

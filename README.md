@@ -45,8 +45,6 @@ Postman
 
     pip install -r requirements.txt     
 
->Read documentation for how to create url for getting the response.     
-
 >Start Elasticsearch, Redis and Celery.     
     Elasticsearch -> sudo -i service elasticsearch start    
     Celery -> celery -A app.celery worker --loglevel=info   
@@ -55,6 +53,8 @@ Postman
 >Run in terminal:   
     
     flask run   
+
+>Read documentation for how to create url for getting the response.     
 
 >Do API hits using Postman.     
 
