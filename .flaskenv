@@ -1,5 +1,5 @@
 
-FLASK_APP = main_run.py
+FLASK_APP = app.py
 
 FLASK_ENV=development
 
