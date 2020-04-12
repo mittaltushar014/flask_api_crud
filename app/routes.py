@@ -743,7 +743,6 @@ def delete_answer(active_user_id, user_id, question_id):
         return make_response('The answer is deleted', 200)
 
 
-
 @app.route('/api/covid_stats', methods=['PUT'])
 def update_covid_data_api():
     '''Handles PUT requests to update the Covid infection stats from a csv file.'''
