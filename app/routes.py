@@ -29,7 +29,7 @@ def before_request():
 
 
 @app.route("/")
-@app.route("/signup", methods=['GET', 'POST'])
+@app.route("/signup", methods=['POST'])
 def web_signup():
 
     '''For registering a user'''
@@ -46,12 +46,11 @@ def web_signup():
 
         flash(f'Your account has been created! You are now able to login', 'success')
 
-        return redirect(url_for('web_login'))
+        return render_template('login.html')
 
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/")
 @app.route("/login", methods=['GET', 'POST'])
 def web_login():
     '''For logging in a user'''
@@ -77,7 +76,7 @@ def web_login():
 @login_required
 def web_logout():
     logout_user()
-    return redirect(url_for('web_login'))
+    return render_template('login.html')
 
 
 @app.route('/users')
