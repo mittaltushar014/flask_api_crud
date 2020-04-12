@@ -8,9 +8,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
     SEARCH_INDEX = 'data_covid'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-    SQLALCHEMY_DATABASE_URI = "postgres://postgres:db-flask123@flask-db.ckgbqi9rzpou.us-east-2.rds.amazonaws.com:5432/postgres"    
+    SQLALCHEMY_DATABASE_URI = "postgres://postgres:tushar-123@corona-flask-db.ckgbqi9rzpou.us-east-2.rds.amazonaws.com:5432/postgres"    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    ELASTICSEARCH_URL = "vpc-flask-es-zbr5naqwca7hbqcjypjsbkvir4.us-east-2.es.amazonaws.com:80"
+    ELASTICSEARCH_URL = "vpc-corona-flask-es-jd6nq2w2lvkt4h7yloixdeh2au.us-east-2.es.amazonaws.com:80"
     
     SEARCH_INDEX = 'forum_data'
 
