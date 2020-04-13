@@ -57,9 +57,9 @@ class User(UserMixin, db.Model):
     '''Model for the user'''
     
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), index=True, unique=True)
+    username = db.Column(db.String(50), index=True, unique=True)
     email = db.Column(db.String(50), index=True, unique=True)
-    password = db.Column(db.String(50))
+    password = db.Column(db.String(500))
 
     def __repr__(self):
         return '<User --> ID ->{} USERNAME ->{}>'.format(self.id, self.username)       
@@ -72,7 +72,7 @@ class Questions(SearchableMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
-    question = db.Column(db.String(300))
+    question = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
 
     def __repr__(self):
@@ -85,7 +85,7 @@ class Answers(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     userid = db.Column(db.Integer, db.ForeignKey('user.id'))
     quesid = db.Column(db.Integer, db.ForeignKey('questions.id'))
-    answer_of_ques = db.Column(db.String(500))
+    answer_of_ques = db.Column(db.String(1000))
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
 
     def __repr__(self):

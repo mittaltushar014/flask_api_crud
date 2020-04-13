@@ -28,7 +28,7 @@ def before_request():
     g.locale = str(get_locale())
 
 
-@app.route("/")
+
 @app.route("/signup", methods=['GET', 'POST'])
 def web_signup():
     '''For registering a user'''
@@ -50,7 +50,6 @@ def web_signup():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/")
 @app.route("/login", methods=['GET', 'POST'])
 def web_login():
     '''For logging in a user'''
