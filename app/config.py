@@ -10,11 +10,12 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     SQLALCHEMY_DATABASE_URI = "postgres://postgres:tushar-123@corona-flask-db.ckgbqi9rzpou.us-east-2.rds.amazonaws.com:5432/dbcorona"    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    ELASTICSEARCH_URL = "http://vpc-corona-flask-es-jd6nq2w2lvkt4h7yloixdeh2au.us-east-2.es.amazonaws.com:80/"
-    
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL') or "http://localhost:9200"
+    #SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+
     SEARCH_INDEX = 'forum_data'
 
-    HOSTNAME = 'http://127.0.0.1:5000'
+    HOSTNAME = 'http://0.0.0.0:5001'
 
     COVID_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/" +\
         "COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/" +\

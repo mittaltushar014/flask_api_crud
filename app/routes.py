@@ -10,12 +10,12 @@ from app.forms import  RegistrationForm, LoginForm, QuestionForm, AnswerForm, Se
 from app.models import User, Questions, Answers
 from app.config import Config
 from app.background_jobs import update_covid_stats
+from app.graph import read_data, analyse_data
 from functools import wraps
 import jwt
 import uuid
 import datetime
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import (jwt_required, get_jwt_identity, create_access_token, get_raw_jwt)
 from flask_babel import _, get_locale
 
 
@@ -27,6 +27,13 @@ def before_request():
         g.search_form = SearchForm()
     g.locale = str(get_locale())
 
+
+@app.route("/graph", methods=['GET'])
+def web_graph():
+    '''Function to analyse and display graphs'''
+
+    read_data()
+    return render_template('graph.html')
 
 
 @app.route("/signup", methods=['GET', 'POST'])
@@ -47,6 +54,7 @@ def web_signup():
 
         return redirect(url_for('web_login'))
 
+    read_data()
     return render_template('register.html', title='Register', form=form)
 
 
@@ -233,9 +241,7 @@ def web_user_question_delete(user_id, question_id):
     answers = Answers.query.filter_by(quesid = question_id).all()
     
     db.session.delete(question)
-    
-    if answers:
-        db.session.delete(answers)
+    db.session.delete(answers)
 
     db.session.commit()
 
