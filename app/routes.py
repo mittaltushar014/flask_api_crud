@@ -10,7 +10,7 @@ from app.forms import  RegistrationForm, LoginForm, QuestionForm, AnswerForm, Se
 from app.models import User, Questions, Answers
 from app.config import Config
 from app.background_jobs import update_covid_stats
-from app.graph import read_data, analyse_data
+from app.graph import plot_graph
 from functools import wraps
 import jwt
 import uuid
@@ -32,7 +32,7 @@ def before_request():
 def web_graph():
     '''Function to analyse and display graphs'''
 
-    read_data()
+    plot_graph()
     return render_template('graph.html')
 
 
@@ -54,7 +54,6 @@ def web_signup():
 
         return redirect(url_for('web_login'))
 
-    read_data()
     return render_template('register.html', title='Register', form=form)
 
 
@@ -76,6 +75,7 @@ def web_login():
         else:
             flash(f'Login Unsuccessful. Please check username and password', 'danger')
 
+    plot_graph.delay()
     return render_template('login.html', title='Login', form=form)
 
 
@@ -158,18 +158,13 @@ def web_delete_user(user_id):
     """To delete the user"""
 
     user = User.query.filter_by(id=user_id).first()
-    questions = Questions.query.filter_by(userid=user_id).all()
-    answers = Answers.query.filter_by(userid=user_id).all()
 
     db.session.delete(user)
-    db.session.delete(questions)
-    db.session.delete(answers)
-
     db.session.commit()
 
     flash(f'User Deleted', 'success')
 
-    return render_template(url_for('web_login'))
+    return render_template('login.html', title='Login')
 
 
 
@@ -238,22 +233,15 @@ def web_user_question_delete(user_id, question_id):
 
     question = Questions.query.filter_by(id = question_id).first()
     user = User.query.filter_by(id = user_id).first()
-    answers = Answers.query.filter_by(quesid = question_id).all()
     
     db.session.delete(question)
-    db.session.delete(answers)
-
     db.session.commit()
 
     flash(f'Question Deleted', 'success')
 
     questions_user = Questions.query.filter_by(userid = user_id).all()
-    answers_user = Answers.query.filter_by(userid = user_id).all()
 
-    if answers_user:
-        return render_template('userhome.html', user = user, questions = questions_user, answers = answers_user)
-    else:
-        return render_template('userhome.html', user = user, questions = questions_user)
+    return render_template('userhome.html', user = user, questions = questions_user)
 
 
 @app.route('/users/<int:user_id>/questions/<int:question_id>/answers')
@@ -334,12 +322,8 @@ def web_user_answer_delete(user_id, question_id):
     flash(f'Answer Deleted', 'success')
 
     questions_user = Questions.query.filter_by(userid = user_id).all()
-    answers_user = Answers.query.filter_by(userid = user_id).all()
 
-    if answers_user:
-        return render_template('userhome.html', user = user, questions = questions_user, answers = answers_user)
-    else:
-        return render_template('userhome.html', user = user, questions = questions_user)    
+    return render_template('userhome.html', user = user, questions = questions_user)    
 
 
 @app.route('/search')

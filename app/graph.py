@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
 from flask import render_template
+from app import app, celery
 
-def read_data():
+@celery.task
+def plot_graph():
     
     COVID_CONFIRMED_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
     covid_confirmed = pd.read_csv(COVID_CONFIRMED_URL)
@@ -18,11 +20,7 @@ def read_data():
     COVID_RECOVERED_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
     covid_recovered = pd.read_csv(COVID_RECOVERED_URL)
     covid_recovered.head()
-    
-    return analyse_data(covid_confirmed,covid_deaths,covid_recovered)
 
-
-def analyse_data(covid_confirmed,covid_deaths,covid_recovered):
     covid_confirmed['Country/Region'].replace('Mainland China', 'China', inplace=True)
     covid_deaths['Country/Region'].replace('Mainland China', 'China', inplace=True)
     covid_recovered['Country/Region'].replace('Mainland China', 'China', inplace=True)
@@ -84,3 +82,7 @@ def analyse_data(covid_confirmed,covid_deaths,covid_recovered):
     ax.legend(['Confirmed', 'Death', 'Recovered', 'Active'])
     plt.tick_params(axis='x', which='major', labelsize=8)
     plt.savefig("app/static/covid-image.png")
+
+    return
+
+

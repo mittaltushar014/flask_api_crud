@@ -13,6 +13,9 @@ class Config(object):
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL') or "http://localhost:9200"
     #SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
 
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_BACKEND_URL = "redis://localhost:6379/0"
+
     SEARCH_INDEX = 'forum_data'
 
     HOSTNAME = 'http://0.0.0.0:5001'

@@ -13,12 +13,14 @@ def add_to_index(index, model):
     current_app.elasticsearch.index(index=index, doc_type=index, id=model.id,
                                     body=payload)
 
+
 def remove_from_index(index, model):
     '''For removing from index'''
 
     if not current_app.elasticsearch:
         return
     current_app.elasticsearch.delete(index=index, doc_type=index, id=model.id)
+
 
 def query_index(index, query, page,fields):
     '''For searching in index'''

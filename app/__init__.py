@@ -22,8 +22,10 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 
-celery = Celery(app.name)
-celery.conf.update(CELERY_CONFIG)
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_BACKEND_URL'])
+
+#celery.conf.update(app.config)
+#celery.conf.update(CELERY_CONFIG)
 
 db.init_app(app)
 migrate.init_app(app, db)
