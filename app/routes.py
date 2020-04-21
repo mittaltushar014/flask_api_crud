@@ -164,7 +164,8 @@ def web_delete_user(user_id):
 
     flash(f'User Deleted', 'success')
 
-    return render_template('login.html', title='Login')
+    form = LoginForm()
+    return render_template('login.html', title='Login', form = form)
 
 
 
